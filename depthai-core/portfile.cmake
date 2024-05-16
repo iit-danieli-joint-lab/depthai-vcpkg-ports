@@ -24,6 +24,9 @@ vcpkg_cmake_configure(
         -DHUNTER_SKIP_PACKAGE_jsoncpp:BOOL=ON
         -DHUNTER_STATUS_DEBUG:BOOL=ON
         -DHUNTER_USE_CACHE_SERVERS:BOOL=NO
+        # Avoid that we pollute the global state of the system
+        # and to accidentally access cache
+        -DHUNTER_ROOT:PATH=${CURRENT_PACKAGES_DIR}/hunter_root/
 )
 
 vcpkg_cmake_install()
