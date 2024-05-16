@@ -27,7 +27,7 @@
             "opencv"
         ]
       },
-      "embobj": {
+      "pcl": {
         "description": "Compile DepthAI with support for pcl.",
         "dependencies": [
           "pcl",
@@ -35,4 +35,4 @@
         ]
       }
     }
-  }
+}
