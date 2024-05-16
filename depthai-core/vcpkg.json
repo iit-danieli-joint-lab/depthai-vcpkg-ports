@@ -1,0 +1,38 @@
+{
+    "name": "depthai-core",
+    "version": "2.25.1",
+    "homepage": "https://github.com/luxonis/depthai-core",
+    "description": " DepthAI C++ Library",
+    "license": "MIT",
+    "dependencies": [
+      "nlohmann-json",
+      "spdlog",
+      "zlib",
+      "bzip2",
+      {
+        "name": "vcpkg-cmake",
+        "host": true
+      },
+      {
+        "name": "vcpkg-cmake-config",
+        "host": true
+      }
+    ],
+  
+    "default-features": ["opencv", "pcl"],
+    "features": {
+      "opencv": {
+        "description": "Compile DepthAI with support for opencv.",
+        "dependencies": [
+            "opencv"
+        ]
+      },
+      "pcl": {
+        "description": "Compile DepthAI with support for pcl.",
+        "dependencies": [
+          "pcl",
+          "jsoncpp"
+        ]
+      }
+    }
+}
