@@ -5,8 +5,10 @@
     "description": " DepthAI C++ Library",
     "license": "MIT",
     "dependencies": [
-      "ace",
-      "yarp",
+      "nlohmann-json",
+      "spdlog",
+      "zlib",
+      "bzip2",
       {
         "name": "vcpkg-cmake",
         "host": true
@@ -28,7 +30,8 @@
       "embobj": {
         "description": "Compile DepthAI with support for pcl.",
         "dependencies": [
-          "pcl"
+          "pcl",
+          "jsoncpp"
         ]
       }
     }

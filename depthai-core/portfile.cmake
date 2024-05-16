@@ -17,43 +17,13 @@ vcpkg_cmake_configure(
     SOURCE_PATH "${SOURCE_PATH}"
     OPTIONS
         ${FEATURE_OPTIONS}
-        # Plugins by default are installed in lib/iCub,
-        # but vcpkg prefers all dynamics libraries to be installed under bin
-        -DICUB_DYNAMIC_PLUGINS_INSTALL_DIR="bin/iCub"
-        -DENABLE_icubmod_cartesiancontrollerserver:BOOL=ON
-        -DENABLE_icubmod_cartesiancontrollerclient:BOOL=ON
-        -DENABLE_icubmod_gazecontrollerclient:BOOL=ON
-        -DENABLE_icubmod_skinWrapper:BOOL=ON
-        -DENABLE_icubmod_sharedcan:BOOL=ON
-        -DENABLE_icubmod_bcbBattery:BOOL=${ICUB_MAIN_COMPILE_EMBOBJ}
-        -DENABLE_icubmod_canmotioncontrol:BOOL=${ICUB_MAIN_COMPILE_CAN}
-        -DENABLE_icubmod_canBusAnalogSensor:BOOL=${ICUB_MAIN_COMPILE_CAN}
-        -DENABLE_icubmod_canBusInertialMTB:BOOL=${ICUB_MAIN_COMPILE_CAN}
-        -DENABLE_icubmod_canBusSkin:BOOL=${ICUB_MAIN_COMPILE_CAN}
-        -DENABLE_icubmod_canBusFtSensor:BOOL=${ICUB_MAIN_COMPILE_CAN}
-        -DENABLE_icubmod_canBusVirtualAnalogSensor:BOOL=${ICUB_MAIN_COMPILE_CAN}
-        -DENABLE_icubmod_cfw2can:BOOL=OFF
-        -DENABLE_icubmod_ecan:BOOL=OFF
-        -DENABLE_icubmod_embObjBattery:BOOL=${ICUB_MAIN_COMPILE_EMBOBJ}
-        -DENABLE_icubmod_embObjFTsensor:BOOL=${ICUB_MAIN_COMPILE_EMBOBJ}
-        -DENABLE_icubmod_embObjMultipleFTsensors:BOOL=${ICUB_MAIN_COMPILE_EMBOBJ}
-        -DENABLE_icubmod_embObjIMU:BOOL=${ICUB_MAIN_COMPILE_EMBOBJ}
-        -DENABLE_icubmod_embObjInertials:BOOL=${ICUB_MAIN_COMPILE_EMBOBJ}
-        -DENABLE_icubmod_embObjMais:BOOL=${ICUB_MAIN_COMPILE_EMBOBJ}
-        -DENABLE_icubmod_embObjMotionControl:BOOL=${ICUB_MAIN_COMPILE_EMBOBJ}
-        -DENABLE_icubmod_embObjSkin:BOOL=${ICUB_MAIN_COMPILE_EMBOBJ}
-        -DENABLE_icubmod_parametricCalibrator:BOOL=${ICUB_MAIN_COMPILE_CAN}
-        -DENABLE_icubmod_parametricCalibratorEth:BOOL=${ICUB_MAIN_COMPILE_EMBOBJ}
-        -DENABLE_icubmod_embObjPOS:BOOL=${ICUB_MAIN_COMPILE_EMBOBJ}
-        -DENABLE_icubmod_xsensmtx:BOOL=OFF
-        -DENABLE_icubmod_socketcan:BOOL=OFF
-        -DICUB_USE_icub_firmware_shared:BOOL=ON
-        # For now we just disable modules and tools, if necessary the 
-        # options can be exposed as vcpkg features, and properly processed via vcpkg_copy_tools
-        -DICUBMAIN_COMPILE_CORE:BOOL=OFF
-        -DICUBMAIN_COMPILE_MODULES:BOOL=OFF
-        -DICUBMAIN_COMPILE_TOOLS:BOOL=OFF
-        -DICUB_COMPILE_BINDINGS:BOOL=OFF
+        -DHUNTER_SKIP_PACKAGE_nlohmann_json:BOOL=ON
+        -DHUNTER_SKIP_PACKAGE_BZip2:BOOL=ON
+        -DHUNTER_SKIP_PACKAGE_spdlog:BOOL=ON
+        -DHUNTER_SKIP_PACKAGE_ZLIB:BOOL=ON
+        -DHUNTER_SKIP_PACKAGE_jsoncpp:BOOL=ON
+        -DHUNTER_STATUS_DEBUG:BOOL=ON
+        -DHUNTER_USE_CACHE_SERVERS:BOOL=NO
 )
 
 vcpkg_cmake_install()
