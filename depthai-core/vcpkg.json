@@ -1,6 +1,6 @@
 {
     "name": "depthai-core",
-    "version": "2.25.1",
+    "version": "2.26.0",
     "homepage": "https://github.com/luxonis/depthai-core",
     "description": " DepthAI C++ Library",
     "license": "MIT",
@@ -9,6 +9,9 @@
       "spdlog",
       "zlib",
       "bzip2",
+      "luxonis-xlink",
+      "fp16",
+      "libarchive",
       {
         "name": "vcpkg-cmake",
         "host": true
