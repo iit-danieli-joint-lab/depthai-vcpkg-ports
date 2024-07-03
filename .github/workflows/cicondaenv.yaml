@@ -1,0 +1,19 @@
+name: cicondaenv
+channels:
+  - conda-forge
+dependencies:
+  # C++ development dependencies
+  - compilers
+  - cmake
+  - pkg-config
+  - ninja
+  # depthai-core dependencies
+  - libopencv
+  - pcl
+  - spdlog
+  - zlib
+  - jsoncpp
+  - libusb
+  - cpp-filesystem
+  - xz
+  - libarchive

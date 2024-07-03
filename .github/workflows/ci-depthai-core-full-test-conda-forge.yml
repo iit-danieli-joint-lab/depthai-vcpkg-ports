@@ -1,0 +1,109 @@
+name: ci-depthai-core-full-test-conda-forge
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: '[FullTests@conda-forge@${{ matrix.os }}@${{ matrix.build_type }}]'
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        build_type: [Release]
+        os: [ubuntu-latest, macOS-latest, windows-2019]
+      fail-fast: false
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - uses: conda-incubator/setup-miniconda@v2
+      with:
+        miniforge-variant: Mambaforge
+        miniforge-version: latest
+
+    - name: Configure VS Toolchain [Windows]
+      if: contains(matrix.os, 'windows')
+      uses: ilammy/msvc-dev-cmd@v1.12.1
+
+    - name: Setup compilation env variables [Windows]
+      if: contains(matrix.os, 'windows')
+      shell: bash -l {0}
+      run: |
+        bash_vc_install=${VCToolsInstallDir//\\//}
+        compiler_path=${bash_vc_install}bin/Hostx64/x64/cl.exe
+        echo "CC=${compiler_path}" >> $GITHUB_ENV
+        echo "CXX=${compiler_path}" >> $GITHUB_ENV
+        echo "CMAKE_INSTALL_PREFIX=${CONDA_PREFIX}/Library" >> $GITHUB_ENV
+
+    - name: Setup compilation env variables [Linux/macos]
+      if: contains(matrix.os, 'ubuntu') || contains(matrix.os, 'macos')
+      shell: bash -l {0}
+      run: |
+        echo "CMAKE_INSTALL_PREFIX=${CONDA_PREFIX}" >> $GITHUB_ENV
+
+    - name: Dependencies 
+      shell: bash -l {0}
+      run: |
+        # Compilation related dependencies
+        conda install cmake compilers make ninja pkg-config
+        # Actual dependencies
+        conda install libopencv pcl spdlog zlib jsoncpp libusb cpp-filesystem xz libarchive
+
+    - name: Source-based Dependencies [Linux/macos]
+      shell: bash -l {0}
+      run: |
+        # luxonis-xlink
+        cd ${GITHUB_WORKSPACE}
+        git clone https://github.com/luxonis/XLink
+        cd XLink
+        git checkout 85c306c6fffcb4d8fbe78a99abd38d9a78fd0d21
+        mkdir -p build
+        cd build
+        cmake -DHUNTER_ENABLED:BOOL=OFF -DXLINK_LIBUSB_SYSTEM:BOOL=ON -DCMAKE_INSTALL_PREFIX=${CONDA_PREFIX} .. 
+        cmake --build . --config ${{matrix.build_type}} --target install
+         
+        # luxonis-libnop
+        cd ${GITHUB_WORKSPACE}
+        git clone https://github.com/luxonis/libnop
+        cd libnop
+        git checkout ab842f51dc2eb13916dc98417c2186b78320ed10
+        mkdir -p build
+        cd build
+        cmake -DHUNTER_ENABLED:BOOL=OFF -DCMAKE_INSTALL_PREFIX=${CONDA_PREFIX} .. 
+        cmake --build . --config ${{matrix.build_type}} --target install
+
+        # luxonis-FP16
+        cd ${GITHUB_WORKSPACE}
+        git clone https://github.com/luxonis/FP16
+        cd FP16
+        git checkout c911175d2717e562976e606c6e5f799bf40cf94e
+        mkdir -p build
+        cd build
+        cmake -DHUNTER_ENABLED:BOOL=OFF -DFP16_BUILD_BENCHMARKS:BOOL=ON  -DFP16_BUILD_TESTS:BOOL=OFF -DCMAKE_INSTALL_PREFIX=${CONDA_PREFIX} .. 
+        cmake --build . --config ${{matrix.build_type}} --target install
+
+    - name: Configure [Linux&macOS]
+      if: contains(matrix.os, 'macos') || contains(matrix.os, 'ubuntu')
+      shell: bash -l {0}
+      run: |
+        cd ${GITHUB_WORKSPACE}
+        git clone https://github.com/traversaro/depthai-core
+        cd depthai-core
+        git checkout cc96dd161ace14616ac0ac044c71498971fa4a67
+        mkdir -p build
+        cd build
+        cmake -GNinja -DHUNTER_ENABLED:BOOL=OFF -DDEPTHAI_PCL_SUPPORT:BOOL=ON -DDEPTHAI_ENABLE_BACKWARD:BOOL=OFF -DDEPTHAI_ENABLE_CURL:BOOL=OFF -DBUILD_TESTING:BOOL=ON -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCMAKE_INSTALL_PREFIX=${CONDA_PREFIX} ..
+
+    - name: Build
+      shell: bash -l {0}
+      run: |
+        cd ${GITHUB_WORKSPACE}/depthai-core/build
+        cmake --build . --config ${{ matrix.build_type }} --target install
+
+    - name: Test
+      shell: bash -l {0}
+      run: |
+        cd ${GITHUB_WORKSPACE}/depthai-core/build
+        ctest --output-on-failure -C ${{ matrix.build_type }}
