@@ -95,7 +95,7 @@ jobs:
       shell: bash -l {0}
       run: |
         cd ${GITHUB_WORKSPACE}
-        git clone https://github.com/traversaro/depthai-core depthai-core-conda-forge
+        git clone --recurse-submodules https://github.com/traversaro/depthai-core depthai-core-conda-forge
         cd depthai-core-conda-forge
         git checkout cc96dd161ace14616ac0ac044c71498971fa4a67
         mkdir -p build
