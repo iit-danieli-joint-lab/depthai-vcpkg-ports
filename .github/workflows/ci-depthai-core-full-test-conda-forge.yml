@@ -95,9 +95,11 @@ jobs:
       shell: bash -l {0}
       run: |
         cd ${GITHUB_WORKSPACE}
-        git clone --recurse-submodules https://github.com/traversaro/depthai-core depthai-core-conda-forge
+        git clone https://github.com/traversaro/depthai-core depthai-core-conda-forge
         cd depthai-core-conda-forge
         git checkout cc96dd161ace14616ac0ac044c71498971fa4a67
+        git submodule init
+        git submodule update
         mkdir -p build
         cd build
         cmake -GNinja -DHUNTER_ENABLED:BOOL=OFF -DDEPTHAI_PCL_SUPPORT:BOOL=ON -DDEPTHAI_ENABLE_BACKWARD:BOOL=OFF -DDEPTHAI_ENABLE_CURL:BOOL=OFF -DBUILD_TESTING:BOOL=ON -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCMAKE_INSTALL_PREFIX=${CONDA_PREFIX} ..
