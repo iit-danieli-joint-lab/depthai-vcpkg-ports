@@ -51,13 +51,20 @@ jobs:
         # Actual dependencies
         conda install libopencv pcl spdlog zlib jsoncpp libusb cpp-filesystem xz libarchive
 
+    - name: Dependencies [Linux]
+      if: contains(matrix.os, 'ubuntu')
+      shell: bash -l {0}
+      run: |
+        # Workaround for PRIxPTR issue: https://github.com/conda-forge/openmp-feedstock/pull/77#issuecomment-1422096687
+        conda install sysroot_linux-64==2.17
+
     - name: Source-based Dependencies [Linux/macos]
       shell: bash -l {0}
       run: |
         # luxonis-xlink
         cd ${GITHUB_WORKSPACE}
-        git clone https://github.com/luxonis/XLink
-        cd XLink
+        git clone https://github.com/luxonis/XLink conda-forge-xlink
+        cd conda-forge-xlink
         git checkout 85c306c6fffcb4d8fbe78a99abd38d9a78fd0d21
         mkdir -p build
         cd build
@@ -66,8 +73,8 @@ jobs:
          
         # luxonis-libnop
         cd ${GITHUB_WORKSPACE}
-        git clone https://github.com/luxonis/libnop
-        cd libnop
+        git clone https://github.com/luxonis/libnop libnop-conda-forge
+        cd libnop-conda-forge
         git checkout ab842f51dc2eb13916dc98417c2186b78320ed10
         mkdir -p build
         cd build
@@ -76,21 +83,20 @@ jobs:
 
         # luxonis-FP16
         cd ${GITHUB_WORKSPACE}
-        git clone https://github.com/luxonis/FP16
-        cd FP16
+        git clone https://github.com/luxonis/FP16 conda-forge-fp16
+        cd conda-forge-fp16
         git checkout c911175d2717e562976e606c6e5f799bf40cf94e
         mkdir -p build
         cd build
         cmake -DHUNTER_ENABLED:BOOL=OFF -DFP16_BUILD_BENCHMARKS:BOOL=ON  -DFP16_BUILD_TESTS:BOOL=OFF -DCMAKE_INSTALL_PREFIX=${CONDA_PREFIX} .. 
         cmake --build . --config ${{matrix.build_type}} --target install
 
-    - name: Configure [Linux&macOS]
-      if: contains(matrix.os, 'macos') || contains(matrix.os, 'ubuntu')
+    - name: Configure
       shell: bash -l {0}
       run: |
         cd ${GITHUB_WORKSPACE}
-        git clone https://github.com/traversaro/depthai-core
-        cd depthai-core
+        git clone https://github.com/traversaro/depthai-core depthai-core-conda-forge
+        cd depthai-core-conda-forge
         git checkout cc96dd161ace14616ac0ac044c71498971fa4a67
         mkdir -p build
         cd build
@@ -99,7 +105,7 @@ jobs:
     - name: Build
       shell: bash -l {0}
       run: |
-        cd ${GITHUB_WORKSPACE}/depthai-core/build
+        cd ${GITHUB_WORKSPACE}/depthai-core-conda-forge/build
         cmake --build . --config ${{ matrix.build_type }} --target install
 
     - name: Test
